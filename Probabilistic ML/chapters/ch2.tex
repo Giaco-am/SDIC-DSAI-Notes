@@ -1,0 +1,147 @@
+\newpage
+\chapter{Empirical Risk Minimization and PAC Learning}
+
+In this chapter, we will introduce the concept of \textbf{Empirical Risk Minimization} (ERM) in which to frame learning problems, the notion of inductive bias, and the main results of algorithmic learnability, encapsulated in the definition of \textbf{Probably Approximately Correct} (PAC) Learning and of complexity of a set of hypothesis, namely
+VC-dimension and Rademacher complexity.
+
+\section{Empirical Risk Minimization}
+
+We begin by considering a supervised learning setting in which the \textbf{input space} $X$ is a subset of $\mathbb{R}^n$, and the \textbf{output space} $Y$ can be real-valued (e.g., $Y = \mathbb{R}$), binary (e.g., $Y = \{0,1\}$), or a finite set of classes (e.g., $Y = \{0,1,\ldots,K\}$). In this probabilistic framework, each input-output pair $(x,y)$ is drawn from a joint probability distribution
+$$
+p(x,y) \;\in\; \mathrm{Dist}(X \times Y),
+$$
+often referred to as the \emph{\textbf{data generating distribution}}. 
+
+By definition, this distribution factors into the marginal $p(x)$ and the conditional $p(y \mid x)$, so that
+$$
+p(x,y) \;=\; p(x)\,p(y \mid x).
+$$
+
+Because $p(x)$ and $p(y \mid x)$ describe how inputs and outputs are related, it is helpful to write them explicitly. The marginal distribution of $x$ is
+$$
+p(x) \;=\; \int p(x,y)\,dy,
+$$
+while the conditional distribution of $y$ given $x$ is
+$$
+p(y \mid x) \;=\; \frac{p(x,y)}{p(x)}.
+$$
+
+A typical dataset $D$ in supervised learning consists of $N$ input-output pairs drawn independently from $p(x,y)$. We denote this as
+$$
+D \sim p^N(x,y),
+$$
+which means
+$$
+D \;=\; \{(x_i, y_i) \,\mid\, i = 1, \dots, N\},
+$$
+where each $(x_i, y_i)$ is sampled according to the joint distribution $p(x,y)$. 
+
+In many cases, we assume that $p(y \mid x)$ depends on some unknown function of $x$. Formally, one might write
+$$
+p(y \mid x) \;=\; p\bigl(y \mid f(x)\bigr),
+$$
+where $f$ is the function we aim to learn. The central objective in supervised learning—through methods such as empirical risk minimization—is to find or approximate this function $f$ by using the observed data $D$.
+
+\section{Risk and Empirical Risk}
+
+$h \in \mathcal{H} \quad x,y \sim p(x,y)$
+
+\textbf{\textit{loss function}} $l(x,y,h) \in \mathbb{R_{\ge 0}}$, 
+
+\begin{itemize}
+    \item 0-1 loss: $l(x,y,h) = \mathbb{I}(h(x) \neq y)$, eith $y \in \{0, 1\}$.
+    \item squared loss: $l(x,y,h) = (h(x) - y)^2$, with $y \in \mathbb{R}$.
+\end{itemize}
+
+We have a probabilistic process, so we have some inputs that are more likely than others. If a model makes a mistake on a more likely input, it should be penalized more.
+
+\begin{definitionblock}[Risk]
+The \textbf{\textit{risk}} (or \textbf{\textit{generalization error}}) is defined as:
+$$
+R(h) = E_{x,y \sim p(x,y)}[l(x,y,h)]
+$$ 
+\end{definitionblock}
+
+\textbf{Risk minimization principle:}
+
+The goal is to find the hypothesis $h$ that minimizes the risk.
+$$
+\text{find } h^* \in \mathcal{H} \text{ such that } h^* = \mathrm{arg\,min}_{h \in \mathcal{H}} R(h)
+$$
+
+\begin{definitionblock}[Empirical Risk]
+The \textbf{\textit{empirical risk}} (or \textbf{\textit{training error}}) is defined as:
+$$
+\hat R = \dfrac 1N \sum_{i=1}^N l(x_i, y_i, h)
+$$
+\end{definitionblock}
+
+
+\textbf{Empirical risk minimization principle:}
+
+The goal is to find the hypothesis $h$ that minimizes the empirical risk.
+$$
+\text{find } h^*_D = \mathrm{arg\,min}_{h \in \mathcal{H}} \hat R(h)
+$$
+
+\subsection{Bias Variance Trade-off}
+
+In this section, we want to analyze the generalization error and decom-
+pose it according to the sources of error that we are going to commit.
+
+In what follows, we will use the squared loss (hence we will focus on
+regression problems). Considering $h \in \mathcal H$, an explicit expression of the generalization error committed when choosing hypothesis $h$ is:
+$$
+R(h) = E_p[l(x,y,h)] = \int \int (h(x) - y)^2 p(x,y) dx dy
+$$
+
+\newtheorem{theorem}{Theorem}
+\begin{theorem}
+    The minimizer of the generalization error $R$ is:
+    $$
+    \boxed{ g(x) = E[y|x] = \int y p(y|x) dy }
+    $$
+    so that $g = \mathrm{arg\,min}_h R(h),\ if\ g \in \mathcal H$
+\end{theorem}
+
+We can rewrite the risk as:
+$$
+R(h) = \underbrace{\int (h(x) - g(x))^2 p(x) dx}_{=\ 0 \quad iff \quad h(x) = g(x)} + \overbrace{\iint (g(x) - y)^2 p(x,y) dx dy}^{\text{independent of }h \text{: intrinsic noise}}
+$$
+
+
+
+$$
+\begin{array}{rl}
+E_D[R(h^*_D)]
+& = \underbrace{\int ( E_D[h^*_D(x) - g(x)])^2 p(x) dx}_{bias^2} \\
+& + \underbrace{\int E_D[(h^*_D(x) - E_D[h^*_D(x)])^2 p(x) dx]}_{variance} \\
+& + \underbrace{\iint (g(x) - y)^2 p(x,y) dx dy}_{noise}
+\end{array}
+$$
+
+\section{ERM and Maximum Likelihood}
+
+Given a dataset $D = \{(x_i, y_i)\}_{i=1, \dots, m}$ s.t. $D \sim p^m, p = p(x,y)$
+
+We factorize the data generating distributions as: $p(x,y) = p(x) p(y|x)$ and we make an hypothesis on $p(y|x)$, trying to express this conditional probability in a parametric form:
+$$p(y|x) = p(y|x, \theta)$$
+
+[check recording for missing part]
+
+We consider the log Likelihood:
+$$
+L(\theta; D) = \sum_{i = 1}^m \log p(y_i | x_i, \theta)
+$$
+
+Then we apply the maximum likelihood principle:
+
+$$
+\begin{array}{rcl}
+    \argmin{\theta} - L(\theta; D) &
+    = & \argmin{\theta} - \dfrac 1m \displaystyle\sum_{i=1}^m \log p(y_i | x_i, \theta) \\
+    & = & \argmin{\theta}\ E_{p(x,y)}[-\log p(y | x, \theta)]
+\end{array}
+$$
+
+since the avarage is an empirical approximation of the expectation.
