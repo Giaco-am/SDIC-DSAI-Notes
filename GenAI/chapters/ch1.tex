@@ -241,3 +241,63 @@ git fetch upstream
 
 When you're done making local changes, you can push your local branch to GitHub and initiate a pull request. 
 
+\section{Getting changes from a remote repository}
+
+\subsection{Options for getting changes}
+These commands are very useful when interacting with a remote repository. \texttt{clone} and \texttt{fetch} download remote code from a repository's remote URL to your local computer, \texttt{merge} is used to merge different people's work together with yours, and \texttt{pull} is a combination of \texttt{fetch} and \texttt{merge}.
+
+\subsection{Cloning a repository}
+To grab a complete copy of another user's repository, use \texttt{git clone} like this:
+\begin{codeblock}[language=bash]    
+git clone https://github.com/USERNAME/REPOSITORY.git 
+# Clones a repository to your computer
+\end{codeblock}
+
+You can choose from different URLs when cloning a repository. While logged in to GitHub, there URLs are available on the main page of the repository when you click \texttt{<> Code}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/fig1.png}
+\end{figure}
+
+When you run \texttt{git clone}, the following actions occur: 
+\begin{itemize}
+    \item A new folder called \texttt{repo} is made
+    \item It is initialized as a Git repository
+    \item A remote named \texttt{origin} is created, pointing to the URL you cloned from  
+    \item All of the repository's files and commits are downloaded there 
+    \item The default branch is checked out 
+\end{itemize}
+
+For every branch \texttt{foo}, a corresponding remote-tracking branch \texttt{refs/remotes/origin/foo} is created in your local repository. You can usually abbreviate such remote-tracking branch names to \texttt{origin/foo}.
+
+\subsection{Fetching changes from a remote repository}
+
+Use \texttt{fit fetch} to retrieve new work done by other people. Fetching from a repository grabs all the new remote-tracking branches and tags without merging those changes into your own branches.
+
+If you already have a local repository with a remote URL set up for the desired project, you can grab all the new information by using \texttt{fit fetch *remotename*} in the terminal.
+
+\begin{codeblock}[language=bash]
+git fetch REMOTE-NAME 
+# Fetches updates made to a remote repository 
+\end{codeblock}
+
+\subsection{Merging changes into your local branch}
+
+Merging combines your local changes with changes made by others.
+
+Typically, you'd merge a remote-tracking branch (i.e., a branch fetched from a remote repository) with your local branch:
+\begin{codeblock}[language=bash]
+git merge REMOTE-NAME/BRANCH-NAME 
+# Merges updates made online with your local work 
+\end{codeblock}
+
+\subsection{Pulling changes from a remote repository}
+
+\texttt{git pull} is a convenient shortcut for completing both \texttt{git fetch} and \texttt{git merge} in the same command:
+\begin{codeblock}[language=bash]
+git pull REMOTE-NAME BRANCH-NAME 
+# Grabs online updates and merges them with your local work 
+\end{codeblock}
+
+Because \texttt{pull} performs a merge on the retrieved changes, you should ensure that your local work is committed before running the \texttt{pull} command. If you run into a \textbf{merge conflict} you cannot resolve, or if you decide to quit the merge, you can use \texttt{git merge --abort} to take the branch back to where it was in before you pulled. 
