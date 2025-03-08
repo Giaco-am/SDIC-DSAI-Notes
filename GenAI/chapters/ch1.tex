@@ -301,3 +301,37 @@ git pull REMOTE-NAME BRANCH-NAME
 \end{codeblock}
 
 Because \texttt{pull} performs a merge on the retrieved changes, you should ensure that your local work is committed before running the \texttt{pull} command. If you run into a \textbf{merge conflict} you cannot resolve, or if you decide to quit the merge, you can use \texttt{git merge --abort} to take the branch back to where it was in before you pulled. 
+
+
+\newpage
+\section{Dealing with non-fast-forward errors}
+
+Sometimes, Git can't make your change to a remote repository without losing commits. When this happens, your push is refused. 
+
+If another person has pushed to the same branch as you, Git won't be able to push your changes:
+\begin{exampleblock}
+    \begin{codeblock}[language=bash]
+git push origin main
+> To https://github.com/USERNAME/REPOSITORY.git
+>  ! [rejected]        main -> main (non-fast-forward)
+> error: failed to push some refs to 'https://github.com/USERNAME/REPOSITORY.git'
+> To prevent you from losing history, non-fast-forward updates were rejected
+> Merge the remote changes (e.g. 'git pull') before pushing again. See the
+> 'Note about fast-forwards' section of 'git push --help' for details.
+    \end{codeblock}
+\end{exampleblock}
+
+You can fix this by fetching and merging the changes made on the remote branch with the changes that you have made locally:
+\begin{codeblock}[language=bash]
+git fetch origin 
+# Fetches updates made to an online repository
+
+git merge origin YOUR_BRANCH_NAME
+# Merges updates made online with your local work
+\end{codeblock}
+
+Or simply use \texttt{git pull} to perform both commands at once:
+\begin{codeblock}[language=bash]
+git pull origin YOUR_BRANCH_NAME 
+# Grabs online updates and merges them with your local work 
+\end{codeblock}
