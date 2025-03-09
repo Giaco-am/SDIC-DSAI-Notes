@@ -337,7 +337,7 @@ git pull origin YOUR_BRANCH_NAME
 \end{codeblock}
 
 
-\section{Splitting a subfolder out into a new repository (Mac version)}
+\section{Splitting a subfolder out into a new repository}
 
  You can turn a folder within a Git repository into a brand new repository. 
  \begin{warningblock}
@@ -357,6 +357,22 @@ git clone https://github.com/USERNAME/REPOSITORY-NAME
     \item Change the current working directory to your cloned repository.
     \begin{codeblock}[language=bash]
 cd REPOSITORY-NAME 
+    \end{codeblock}
+    \item To filter out the subfolder from the rest of the files in the repository, install \texttt{git-filter-repo}, then run \texttt{git filter-repo} with the following arguments.
+    \begin{itemize}
+        \item \texttt{FOLDER-NAME}: The folder within your project where you'd like to create a separate repository.
+    \end{itemize}
+    \begin{codeblock}[language=bash]
+git filter-repo --path FOLDER-NAME/
+# Filter the specified branch in your directory and remove empty commits 
+    \end{codeblock}
+    The repository should now only contain the files that were in your subfolder(s).
+    
+    If you want one specific subfolder to be the new root folder of the new repository, you can use the following command:
+
+    \begin{codeblock}[language=bash]
+git filter-repo --subdirectory-filter FOLDER-NAME/
+# Filter the specified branch in your directory and remove empty commits
     \end{codeblock}
     \item Create a repository on GitHub.
     \item At the top of your new repository on GitHub's Quick Setup page, click \raisebox{0.3em}{\small$\square$} \hspace{-0.5em} $\square$ to copy the remote repository URL. 
@@ -385,6 +401,107 @@ git push -u origin BRANCH-NAME
  \end{enumerate}
 
 
+ \section{About Git subtree merges}
+
+ Typically, a subtree merge is used to contain a repository within a repository. The "subrepository" is stored in a folder of the main repository. 
+
+ The best way to explain subtree merges is to show by example. We will:
+ \begin{itemize}
+    \item Make an empty repository called \texttt{test} that represents our project.
+    \item Merge another repository into it as a subtree colled \texttt{Spoon-Knife}.
+    \item The \texttt{test} project will use that subproject as if it were part of the same repository.
+    \item Fetch updates from \texttt{Spoon-Knife} into our \texttt{test} project.
+ \end{itemize}
+
+ \subsection{Setting up the empty repository for a subtree merge}
+ \begin{enumerate}
+    \item Open Terminal.
+    \item Create a new directory and navigate to it.
+    \begin{codeblock}[language=bash]
+mkdir test 
+cd test 
+    \end{codeblock}
+    \item Initialize the directory as a Git repository.
+    \begin{codeblock}[language=bash]
+git init
+> Initialized empty Git repository in /Users/octocat/tmp/test/.git/
+    \end{codeblock}
+    \item Create and commit a new file.
+    \begin{codeblock}[language=bash]
+touch .gitignore
+git add .gitignore
+git commit -m "initial commit"
+> [main (root-commit) 3146c2a] initial commit
+>  0 files changed, 0 insertions(+), 0 deletions(-)
+>  create mode 100644 .gitignore
+    \end{codeblock}
+ \end{enumerate}
+
+ \subsection{Adding a new repository as a subtree}
+ \begin{enumerate}
+    \item Add a new remote URL pointing to the separate project that we're interested in.
+    \begin{codeblock}[language=bash]
+git remote add -f spoon-knife https://github.com/octocat/Spoon-Knife.git
+> Updating spoon-knife
+> warning: no common commits
+> remote: Counting objects: 1732, done.
+> remote: Compressing objects: 100% (750/750), done.
+> remote: Total 1732 (delta 1086), reused 1558 (delta 967)
+> Receiving objects: 100% (1732/1732), 528.19 KiB | 621 KiB/s, done.
+> Resolving deltas: 100% (1086/1086), done.
+> From https://github.com/octocat/Spoon-Knife
+>  * [new branch]      main     -> Spoon-Knife/main
+    \end{codeblock}
+    \item Merge the \texttt{Spoon-Knife} project into the local Git project. This does not change any of your files locally, but it does prepare Git for the next step.
+    
+    If you're using Git 2.9 or above:
+    \begin{codeblock}[language=bash]
+git merge -s ours --no-commit --allow-unrelated-histories spoon-knife/main 
+> Automatic merge went well; stopped before committing as requested
+    \end{codeblock}
+
+    If you're using Git 2.8 or below:
+    \begin{codeblock}[language=bash]
+git merge -s ours --no-commit spoon-knife/main
+> Automatic merge went well; stopped before committing as requested
+    \end{codeblock}
+
+    \item Create a new directory called \textbf{spoon-knife}, and copy the Git history of the \texttt{Spoon-Knife} project into it.
+    \begin{codeblock}[language=bash]
+git read-tree --prefix=spoon-knife/ -u spoon-knife/main
+> fatal: refusing to merge unrelated histories
+    \end{codeblock}
+    
+    \item Commit the changes to keep them safe.
+    \begin{codeblock}[language=bash]
+git commit -m "Subtree merged in spoon-knife"
+> [main fe0ca25] Subtree merged in spoon-knife
+    \end{codeblock}
+\end{enumerate}
+
+Although we've only added one subproject, any number of subprojects can be incorporated into a Git repository.
+
+\begin{tipsblock}
+If you create a fresh clone of the repository in the future, the remotes you've added will not be created for you. You will have to add them again using the \texttt{git remote add} command.
+\end{tipsblock}
+
+\subsection{Synchronizing with updates and changes}
+
+When a subproject is added, it is not automatically kept in sync with the upstream changes. You will need to update the subproject with the following command:
+\begin{codeblock}[language=bash]
+git pull -s subtree REMOTE-NAME BRANCH-NAME 
+\end{codeblock}
+
+For the example above, this would be:
+\begin{codeblock}[language=bash]
+git pull -s subtree spoon-knife main 
+\end{codeblock}
 
 
- 
+\newpage 
+\section{About Git rebase}
+
+
+
+
+
