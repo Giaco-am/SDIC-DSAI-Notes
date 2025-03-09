@@ -501,6 +501,84 @@ git pull -s subtree spoon-knife main
 \newpage 
 \section{About Git rebase}
 
+Typically, you would use \texttt{git rebase} to:
+\begin{itemize}
+    \item Edit previous commit messages
+    \item Combine multiple commits into one
+    \item Delete or revert commits that are no longer necessary
+\end{itemize}
+
+\begin{warningblock}
+    Because changing your commit history can make things difficult for everyone else using the repository, it's considered bad practice to rebase commits when you've already pushed to a repository. To learn how to safely rebase, see \href{https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges}{About pull request merges}.
+\end{warningblock}
+
+\subsection{Rebasing commits against a branch}
+To rebase all the commits between another branch and the current branch state, you can enter the following command in your shell (either the command prompt for Windows, or the terminal for Mac and Linux):
+\begin{codeblock}[language=bash]
+git rebase --interactive OTHER-BRANCH-NAME 
+\end{codeblock}
+
+\subsection{Rebasing commits against a point in time}
+To rebase the last few commits in your current branch, you can enter the following command in your shell:
+\begin{codeblock}[language=bash]
+git rebase --interactive HEAD~7
+\end{codeblock}
+
+\subsection{Commands available while rebasing}
+
+There are six commands available while rebasing:
+\begin{itemize}
+    \item \texttt{pick}
+    \\ simply means that the commits is included. Rearranging the order of the \texttt{pick} commands changes the order of the commits when the rebase is underway. If you choose not to include a comit, you should delete the entire line.
+    \item \texttt{reword}
+    \\ it is similar to \texttt{pick}, but after you use it, the rebase process will pause and give you a chance to alter the commit message. Any changes made by the commit are not affected. 
+    \item \texttt{edit}
+    \\ if you choose to \texttt{edit} a commit, you'll be given the chance to amend the commit, meaning that you can add or change the commit entirely. you can also make more commits before you continue the rebase. This allows you to split a large commit into smaller ones, or, remove erroneus changes made in a commit. 
+    \item \texttt{squash}
+    \\ it lets you combine two or more commits into a single one. A commit is squashed into the commit above it. Git gives you the chance to write a new commit message describing both changes. 
+    \item \texttt{fixup}
+    \\ similar to \texttt{squash}, but the commit to be merged has its message discarded. The commit is simply merged into the commit above it, and the earlier commit's message is used to describe both changes. 
+    \item \texttt{exec}
+    \\ This lets you run arbitrary shell commands against a commit. 
+\end{itemize}
+
+\subsection{An example of using \texttt{git rebase}}
+No matter which command you use, Git will launch your default editor and open a file that details the commits in the range you've chosen. That file looks something like this:
+\begin{exampleblock}
+    \begin{codeblock}[language=bash]
+pick 1fc6c95 Patch A
+pick 6b2481b Patch B
+pick dd1475d something I want to split
+pick c619268 A fix for Patch B
+pick fa39187 something to add to patch A
+pick 4ca2acc i cant' typ goods
+pick 7b36971 something to move before patch B
+
+# Rebase 41a72e6..7b36971 onto 41a72e6
+#
+# Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but meld into previous commit
+#  f, fixup = like "squash", but discard this commit's log message
+#  x, exec = run command (the rest of the line) using shell
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+# However, if you remove everything, the rebase will be aborted.
+#
+    \end{codeblock}
+\end{exampleblock}
+
+Breaking this information from top to bottom, we see that:
+\begin{itemize}
+    \item Seven commits are listed, which indicates that there were seven changes between out starting point and our current branch state.
+    \item The commits you chose to rebase are sorted in the order of the oldest changes (at the top) to te newest changes (at the botom).
+    \item Each line lists a command (by default, \texttt{pick}), the commit SHA, and the commit message. The entire \texttt{git rebase} procedure centers around your manipulation of these three columns. The changes you make are rebased onto your repository. 
+    \item After the commits, Git tells you the range of commits we're working with (\texttt{41a72e6..7b36971}).
+    \item Finally, Git gives some help by telling you the commands that are available to you when rebasing commits. 
+\end{itemize}
+
 
 
 
