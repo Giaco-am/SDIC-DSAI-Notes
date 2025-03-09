@@ -335,3 +335,56 @@ Or simply use \texttt{git pull} to perform both commands at once:
 git pull origin YOUR_BRANCH_NAME 
 # Grabs online updates and merges them with your local work 
 \end{codeblock}
+
+
+\section{Splitting a subfolder out into a new repository (Mac version)}
+
+ You can turn a folder within a Git repository into a brand new repository. 
+ \begin{warningblock}
+ You need Git version 2.22.0 or later to follow these instructions, otherwise \plaintt{git filter-repo} will not work.
+ \end{warningblock}
+
+ If you create a new clone of the repository, you won't lose any of your Git history or changes when you split a folder into a separate repository. However, note that the new repository won't have the branches and tags of the original repository. 
+
+ Steps:
+ \begin{enumerate}
+    \item Open Terminal.
+    \item Change the current working directory to the location where you want to create your new repository.
+    \item Clone the repository that contains the subfolder.
+    \begin{codeblock}[language=bash]
+git clone https://github.com/USERNAME/REPOSITORY-NAME 
+    \end{codeblock}
+    \item Change the current working directory to your cloned repository.
+    \begin{codeblock}[language=bash]
+cd REPOSITORY-NAME 
+    \end{codeblock}
+    \item Create a repository on GitHub.
+    \item At the top of your new repository on GitHub's Quick Setup page, click \raisebox{0.3em}{\small$\square$} \hspace{-0.5em} $\square$ to copy the remote repository URL. 
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{assets/fig2.png}
+    \end{figure}
+    \begin{tipsblock}
+        For information on the difference between HTTPS and SSH URLs, see \href{https://docs.github.com/en/get-started/git-basics/about-remote-repositories}{About remote repositories}.
+    \end{tipsblock}
+    \item Add a new remote name with the URL you copied for your repository. For example, \texttt{origin} or \texttt{upstream} are two common choices. 
+    \begin{codeblock}[language=bash]
+git remote add NEW-REMOTE-NAME URL
+    \end{codeblock}
+    \item Verify that the remote URL was added with your new repository name.
+    \begin{codeblock}[language=bash]
+git remote -v
+# Verify new remote URL 
+> origin  https://github.com/USERNAME/NEW-REPOSITORY-NAME.git (fetch)
+> origin  https://github.com/USERNAME/NEW-REPOSITORY-NAME.git (push)
+    \end{codeblock}
+    \item Push your changes to the new repository on GitHub.
+    \begin{codeblock}[language=bash]
+git push -u origin BRANCH-NAME
+    \end{codeblock}
+ \end{enumerate}
+
+
+
+
+ 
